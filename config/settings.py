@@ -26,6 +26,7 @@ INSTALLED_APPS = [
 
     # Swagger replacement (IMPORTANT)
     'drf_spectacular',
+    
 
     'auth_app',
 ]
