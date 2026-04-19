@@ -3,14 +3,14 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
+SECRET_KEY = "django-insecure-key"
 
 DEBUG = False
 
 ALLOWED_HOSTS = [
     ".vercel.app",
-    "localhost",
-    "127.0.0.1"
+    "127.0.0.1",
+    "localhost"
 ]
 
 INSTALLED_APPS = [
@@ -23,10 +23,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
-
-    # Swagger replacement (IMPORTANT)
     'drf_spectacular',
-    
 
     'auth_app',
 ]
@@ -39,37 +36,17 @@ MIDDLEWARE = [
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Kathmandu'
-USE_I18N = True
-USE_TZ = True
-
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
