@@ -1,12 +1,18 @@
 import os
 from pathlib import Path
 
+# =========================
+# BASE CONFIG
+# =========================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # =========================
 # SECURITY
 # =========================
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "unsafe-dev-key")
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-change-this-in-production"
+)
 
 DEBUG = False
 
@@ -17,9 +23,10 @@ ALLOWED_HOSTS = [
 ]
 
 # =========================
-# APPS
+# APPLICATIONS
 # =========================
 INSTALLED_APPS = [
+    # Django default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -27,11 +34,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # third party
+    # Third-party apps
     'rest_framework',
     'corsheaders',
 
-    # your app
+    # Your apps
     'auth_app',
 ]
 
@@ -40,6 +47,8 @@ INSTALLED_APPS = [
 # =========================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # WhiteNoise (static files for Vercel)
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'corsheaders.middleware.CorsMiddleware',
@@ -50,9 +59,17 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# =========================
+# ROOT URL
+# =========================
 ROOT_URLCONF = 'config.urls'
+
+# =========================
+# WSGI
+# =========================
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # =========================
@@ -65,6 +82,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -74,7 +92,7 @@ TEMPLATES = [
 ]
 
 # =========================
-# DATABASE (DEV)
+# DATABASE (DEV SAFE)
 # =========================
 DATABASES = {
     'default': {
@@ -84,15 +102,52 @@ DATABASES = {
 }
 
 # =========================
-# STATIC FILES
+# PASSWORD VALIDATION
+# =========================
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# =========================
+# INTERNATIONALIZATION
+# =========================
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'Asia/Kathmandu'
+USE_I18N = True
+USE_TZ = True
+
+# =========================
+# STATIC FILES (VERY IMPORTANT FOR VERCEL)
 # =========================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 # =========================
-# CORS
+# MEDIA FILES (optional)
+# =========================
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# =========================
+# DEFAULT PRIMARY KEY
+# =========================
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# =========================
+# CORS SETTINGS
 # =========================
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -109,6 +164,8 @@ REST_FRAMEWORK = {
 }
 
 # =========================
-# DEFAULT FIELD
+# SECURITY HEADERS (PRODUCTION SAFE)
 # =========================
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
