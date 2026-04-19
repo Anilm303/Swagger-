@@ -1,3 +1,4 @@
+import setuptools
 from pathlib import Path
 import os
 
@@ -7,16 +8,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # =====================
 SECRET_KEY = os.environ.get(
-    'DJANGO_SECRET_KEY',
-    'django-insecure-swagger-demo-key-change-in-production'
+    "DJANGO_SECRET_KEY",
+    "django-insecure-change-this-in-production"
 )
 
-DEBUG = True  # Vercel = production safe
+DEBUG = False  # ✅ REQUIRED for Vercel
 
 ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
     ".vercel.app",
+    "localhost",
+    "127.0.0.1",
     "*"
 ]
 
@@ -42,11 +43,11 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 # =====================
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 
-    # WhiteNoise (safe for Vercel)
     'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    'corsheaders.middleware.CorsMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,9 +57,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# =====================
-# URL & WSGI
-# =====================
 ROOT_URLCONF = 'config.urls'
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -82,7 +80,7 @@ TEMPLATES = [
 ]
 
 # =====================
-# DATABASE (SQLite for now)
+# DATABASE (SQLite)
 # =====================
 DATABASES = {
     'default': {
@@ -92,35 +90,12 @@ DATABASES = {
 }
 
 # =====================
-# PASSWORD VALIDATION
-# =====================
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
-
-# =====================
-# INTERNATIONALIZATION
-# =====================
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
-
-# =====================
-# STATIC FILES (IMPORTANT FOR VERCEL)
+# STATIC FILES
 # =====================
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# =====================
-# DEFAULT AUTO FIELD
-# =====================
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 # =====================
 # CORS
@@ -128,41 +103,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
 # =====================
-# REST FRAMEWORK (SAFE MODE)
+# REST FRAMEWORK
 # =====================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-
-        # TEMP SAFE: disable custom JWT until verified
-        # 'auth_app.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'rest_framework.permissions.AllowAny',
     ],
 }
 
 # =====================
-# SWAGGER (SAFE FOR VERCEL)
+# SWAGGER
 # =====================
 SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
-            'description': 'Enter: Bearer <your_token>',
-        }
-    },
     'USE_SESSION_AUTH': False,
     'JSON_EDITOR': True,
-    'SHOW_REQUEST_HEADERS': True,
     'VALIDATOR_URL': None,
 }
 
 # =====================
-# JWT SETTINGS
+# DEFAULT AUTO FIELD
 # =====================
-JWT_SECRET = os.environ.get('JWT_SECRET', SECRET_KEY)
-JWT_ALGORITHM = 'HS256'
-JWT_EXPIRY_HOURS = 24
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
