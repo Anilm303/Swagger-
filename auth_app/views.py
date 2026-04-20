@@ -93,6 +93,7 @@ class LogoutView(APIView):
 
     @extend_schema(
         summary="Logout user",
+        request=None,
         responses={200: MessageSerializer},
         tags=["User"],
     )
