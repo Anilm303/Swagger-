@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
@@ -14,6 +15,16 @@ def env_bool(name, default=False):
 def env_list(name, default=""):
     value = os.getenv(name, default)
     return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def env_int(name, default):
+    value = os.getenv(name)
+    if value is None or value.strip() == "":
+        return default
+    try:
+        return int(value)
+    except ValueError:
+        return default
 
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "replace-this-with-a-long-random-secret-key-for-local-development-only-12345")
@@ -79,9 +90,12 @@ TEMPLATES = [
 
 DATABASE_URL = os.getenv('DATABASE_URL')
 if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
-    }
+    try:
+        DATABASES = {
+            'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+        }
+    except Exception as exc:
+        raise ImproperlyConfigured('Invalid DATABASE_URL environment variable') from exc
 else:
     DATABASES = {
         "default": {
@@ -102,13 +116,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 JWT_SECRET = os.getenv('JWT_SECRET', SECRET_KEY)
 JWT_ALGORITHM = os.getenv('JWT_ALGORITHM', 'HS256')
-JWT_EXPIRY_HOURS = int(os.getenv('JWT_EXPIRY_HOURS', '24'))
+JWT_EXPIRY_HOURS = env_int('JWT_EXPIRY_HOURS', 24)
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SECURE_SSL_REDIRECT = env_bool('SECURE_SSL_REDIRECT', not DEBUG)
-SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '31536000')) if not DEBUG else 0
+SECURE_HSTS_SECONDS = env_int('SECURE_HSTS_SECONDS', 31536000) if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', not DEBUG)
 SECURE_HSTS_PRELOAD = env_bool('SECURE_HSTS_PRELOAD', False)
 
