@@ -30,6 +30,7 @@ def env_int(name, default):
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "replace-this-with-a-long-random-secret-key-for-local-development-only-12345")
 
 DEBUG = env_bool("DEBUG", False)
+IS_VERCEL = os.getenv("VERCEL", "").strip() == "1"
 
 ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", ".vercel.app,127.0.0.1,localhost")
 
@@ -61,7 +62,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'corsheaders.middleware.CorsMiddleware',
 
@@ -72,6 +72,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if not IS_VERCEL:
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -110,7 +113,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+if not IS_VERCEL:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
