@@ -4,6 +4,9 @@ __pycache__/
 .env
 db.sqlite3
 staticfiles/
+!staticfiles/
+staticfiles/*
+!staticfiles/.gitkeep
 .vercel/
 *.egg-info/
 dist/

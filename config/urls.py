@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
@@ -11,8 +11,14 @@ def home(request):
         "redoc": "/redoc/"
     })
 
+
+def favicon(_request):
+    return HttpResponse(status=204)
+
 urlpatterns = [
     path('', home),
+    path('favicon.ico', favicon),
+    path('favicon.png', favicon),
 
     path('admin/', admin.site.urls),
     path('api/auth/', include('auth_app.urls')),
