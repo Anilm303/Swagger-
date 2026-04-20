@@ -1,10 +1,15 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.http import JsonResponse, HttpResponse
+import logging
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
+
+logger = logging.getLogger(__name__)
+
 def home(request):
+    logger.info("health endpoint hit", extra={"path": request.path})
     return JsonResponse({
         "message": "Django Auth API Running 🚀",
         "swagger": "/swagger/",
